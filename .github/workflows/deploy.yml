@@ -16,6 +16,13 @@ name: Deploy
 
 on:
   workflow_call:
+    inputs:
+      ruby-version:
+        required: false
+        type: string
+      ruby-gemfile-dir:
+        required: false
+        type: string
 
 jobs:
   deploy:
@@ -81,6 +88,14 @@ jobs:
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > ~/.npmrc
           yarn install
+
+      - name: Set up Ruby
+        if: ${{ inputs.ruby-version }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ inputs.ruby-version }}
+          working-directory: ${{ inputs.ruby-gemfile-dir }}
+          bundler-cache: true
 
       # Run a production deploy only when the branch is main/master, the
       # deploy.public flag is true in package.json, and (this is a push deploy

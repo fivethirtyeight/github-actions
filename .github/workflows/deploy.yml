@@ -17,6 +17,10 @@ name: Deploy
 on:
   workflow_call:
     inputs:
+      skip-qa-deploy:
+        required: false
+        type: boolean
+        default: false
       ruby-version:
         required: false
         type: string
@@ -155,6 +159,7 @@ jobs:
       # it's empty for main/master deploys.
       - name: Run pre-deploy-qa script
         if: |
+          (!inputs.skip-qa-deploy) &&
           (!github.event.action || github.event.action == 'deploy-qa') &&
           fromJson(env.package).scripts['pre-deploy-qa']
         run: |
@@ -162,12 +167,14 @@ jobs:
 
       - name: Deploy to QA
         if: |
+          (!inputs.skip-qa-deploy) &&
           (!github.event.action || github.event.action == 'deploy-qa')
         run: |
           DEPLOY_BRANCH=${{ env.branch }} yarn run deploy-qa
 
       - name: Run post-deploy-qa script
         if: |
+          (!inputs.skip-qa-deploy) &&
           (!github.event.action || github.event.action == 'deploy-qa') &&
           fromJson(env.package).scripts['post-deploy-qa']
         run: |

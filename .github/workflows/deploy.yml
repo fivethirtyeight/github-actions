@@ -38,6 +38,8 @@ jobs:
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.client_payload.branch || '' }}
 
       - name: Keys
         run: ${{ secrets.KEYS_CMD }}
@@ -46,7 +48,7 @@ jobs:
       # otherwise to the branch name
       - name: Get Git branch name
         run: |
-          branch="${GITHUB_REF#refs/heads/}"
+          branch="${{ github.event.client_payload.branch || github.ref_name }}"
           branch=$(echo $branch | sed s/^main$// | sed s/^master$//)
           echo "branch=$branch" >> $GITHUB_ENV
 

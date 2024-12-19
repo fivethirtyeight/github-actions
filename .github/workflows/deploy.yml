@@ -39,7 +39,7 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.client_payload.branch || '' }}
+          ref: ${{ github.event.client_payload.branch || github.ref_name || '' }}
 
       - name: Keys
         run: ${{ secrets.KEYS_CMD }}
